@@ -23,5 +23,3 @@ def abrecsv(dados, caminho):
 
     df = pd.concat([df_top, df_nova, df_bottom], ignore_index=True)
     df.to_csv(caminho, index=False)
-
-    return
