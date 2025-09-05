@@ -1,10 +1,13 @@
 import pandas as pd
+import openpyxl
+from openpyxl.styles import Alignment
 
 def abrecsv(dados, caminho):
-    df = pd.read_csv(caminho)
-    if "CLIENTE" in df.columns:
-        df = df.drop(columns=["CLIENTE"])
-    
+
+    #df = pd.read_csv(caminho)
+    #if "CLIENTE" in df.columns:
+    #    df = df.drop(columns=["CLIENTE"])
+
     nova_linha = {"O.S.": dados["Id"]
                   ,"MATRICULA": dados["matricula"]
                   ,"LOTE E QD": dados["complemento"]
@@ -12,14 +15,30 @@ def abrecsv(dados, caminho):
                   ,"CONSTRUTOR": dados["nome"]
                   ,"STATUS": (dados["grupo"]+dados["atividade"]+" ABERTURA: "+dados["data"])
                   ,"VALOR LAUDO" : 0} 
+
+    try:
+        wb = openpyxl.load_workbook(caminho)
+    except FileNotFoundError:
+        print(f"Arquivo não encontrado: {caminho}")
+        return
     
-    linhas_vazias = df.isna().all(axis=1)
-    indices = df[linhas_vazias].index.tolist()
+    ws = wb.active
 
-    df_top = df.iloc[:indices[0]]
-    df_bottom = df.iloc[indices[0]:]
+    empty_row_idx = None
+    for i, row in enumerate(ws.iter_rows(min_row=2), start=2):
+        if all(cell.value in (None, "") for cell in row):
+            empty_row_idx = i
+            break
+    
+    values = list(nova_linha.values())
+    if empty_row_idx:
+        ws.insert_rows(empty_row_idx)
+        for col_idx, value in enumerate(values, start=1):
+            cell = ws.cell(row=empty_row_idx, column=col_idx, value=value)
+            cell.alignment = Alignment(horizontal="left", vertical="center")
+    else:
+        ws.append(values)
+        for cell in ws[ws.max_row]:
+            cell.alignment = Alignment(horizontal="left", vertical="center")
 
-    df_nova = pd.DataFrame([nova_linha])
-
-    df = pd.concat([df_top, df_nova, df_bottom], ignore_index=True)
-    df.to_csv(caminho, index=False)
+    wb.save(caminho)
