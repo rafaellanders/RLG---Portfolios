@@ -1,6 +1,6 @@
 import pandas as pd
 import openpyxl
-from openpyxl.styles import Alignment
+from openpyxl.styles import Alignment, Font
 
 def abrecsv(dados, caminho):
 
@@ -35,10 +35,12 @@ def abrecsv(dados, caminho):
         ws.insert_rows(empty_row_idx)
         for col_idx, value in enumerate(values, start=1):
             cell = ws.cell(row=empty_row_idx, column=col_idx, value=value)
-            cell.alignment = Alignment(horizontal="left", vertical="center")
+            cell.alignment = Alignment(horizontal="center", vertical="center")
+            cell.font = Font(name="Arial", bold=True)
     else:
         ws.append(values)
         for cell in ws[ws.max_row]:
-            cell.alignment = Alignment(horizontal="left", vertical="center")
+            cell.alignment = Alignment(horizontal="center", vertical="center")
+            cell.font = Font(name="Arial", bold=True)
 
     wb.save(caminho)

@@ -41,11 +41,11 @@ class PdfProcessor(QObject):
 class JanelaPrincipal(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Processador de PDFs → CSV")
+        self.setWindowTitle("Processador de PDFs → XLSX")
         self.setMinimumSize(700, 450)
 
         # botões
-        self.btn_csv = QPushButton("Selecionar CSV destino…")
+        self.btn_csv = QPushButton("Selecionar Planilha destino…")
         self.btn_csv.clicked.connect(self.selecionar_csv)
 
         self.btn_pdfs = QPushButton("Selecionar PDFs…")
@@ -57,7 +57,7 @@ class JanelaPrincipal(QMainWindow):
 
         # labels
         self.lbl_status = QLabel("Pronto.")
-        self.lbl_csv = QLabel("CSV destino: (nenhum selecionado)")
+        self.lbl_csv = QLabel("Planilha destino: (nenhum selecionado)")
         self.lbl_pdfs = QLabel("PDFs selecionados: 0")
 
         # progress bar e log
@@ -93,14 +93,14 @@ class JanelaPrincipal(QMainWindow):
 
     def selecionar_csv(self):
         caminho, _ = QFileDialog.getSaveFileName(
-            self, "Selecionar CSV destino", "", "CSV Files (*.csv);;All Files (*)"
+            self, "Selecionar planilha destino", "", "XLSX Files (*.xlsx);;All Files (*)"
         )
         if caminho:
-            if not caminho.lower().endswith(".csv"):
-                caminho += ".csv"
+            if not caminho.lower().endswith(".xlsx"):
+                caminho += ".xlsx"
             self.csv_path = caminho
-            self.lbl_csv.setText(f"CSV destino: {self.csv_path}")
-            self.log.append(f"CSV destino selecionado: {self.csv_path}")
+            self.lbl_csv.setText(f"Planilha destino: {self.csv_path}")
+            self.log.append(f"Planilha destino selecionado: {self.csv_path}")
             self.atualizar_botao_faca()
 
     def selecionar_pdfs(self):
