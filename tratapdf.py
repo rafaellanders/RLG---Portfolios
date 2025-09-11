@@ -16,6 +16,9 @@ def abrepdf(caminho):
     retorno = extraiinfo(reader)
     return retorno
     
+def matchfunc(pattern, text, default="0"):
+    matches = re.findall(pattern, text, re.IGNORECASE)
+    return matches[0].strip() if matches else default
 
 def extraiinfo(reader):
     #print(f"O PDF tem {len(reader.pages)} páginas.\n")
@@ -38,40 +41,23 @@ def extraiinfo(reader):
         #Patterns ordem de serviço
         patternId = r"Identificação da Demanda:\s*(.*?)Data"
         patternData = r"Data de Abertura:(\b\d{2}/\d{2}/\d{4}\b)"
-        
-        #Matches
-        #Matches dados do cartório
-        matchesMatricula = re.findall(patternMatricula, text, re.IGNORECASE)
-        #Matches contato para vistória
-        matchesNomeVistoria = re.findall(patternNomeVistoria, text, re.IGNORECASE)
-        #Matches dados do serviço
-        matchesGrupo = re.findall(patternGrupo, text, re.IGNORECASE)
-        matchesAtividade = re.findall(patternAtividade, text, re.IGNORECASE)
-        #Matches dados do imóvel
-        matchesEndereco = re.findall(patternEndereco, text, re.IGNORECASE)
-        matchesNumero = re.findall(patternNumero, text, re.IGNORECASE)
-        matchesLogradouro = re.findall(patternLogradouro, text, re.IGNORECASE)
-        matchesComplemento = re.findall(patternComplemento, text, re.IGNORECASE)
-        #Matches Ordem de serviço
-        matchesId = re.findall(patternId, text, re.IGNORECASE)
-        matchesData = re.findall(patternData, text, re.IGNORECASE)
 
         dados = {}
         #Dados do cartório
-        dados['matricula'] = matchesMatricula[0].strip()
+        dados['matricula'] = matchfunc(patternMatricula, text)
         #Dados Contato para vistória
-        dados['nome'] = matchesNomeVistoria[0].strip()
+        dados['nome'] = matchfunc(patternNomeVistoria, text)
         #Dados do serviço
-        dados['grupo'] = matchesGrupo[0].strip()
-        dados['atividade'] = matchesAtividade[0].strip()
+        dados['grupo'] = matchfunc(patternGrupo, text)
+        dados['atividade'] = matchfunc(patternAtividade, text)
         #Dados do imóvel
-        dados['endereco'] = matchesEndereco[0].strip()
-        dados['numero']   = matchesNumero[0].strip()
-        dados['logradouro'] = matchesLogradouro[0].strip()
-        dados['complemento'] = matchesComplemento[0].strip()
+        dados['endereco'] = matchfunc(patternEndereco, text)
+        dados['numero']   = matchfunc(patternNumero, text)
+        dados['logradouro'] = matchfunc(patternLogradouro, text)
+        dados['complemento'] = matchfunc(patternComplemento, text)
         #Dados Ordem de Serviço
-        dados['Id'] = matchesId[0].strip()
-        dados['data'] = matchesData[0].strip()
+        dados['Id'] = matchfunc(patternId, text)
+        dados['data'] = matchfunc(patternData, text)
 
         return dados
 

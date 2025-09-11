@@ -25,14 +25,15 @@ class PdfProcessor(QObject):
             try:
                 dados = tratapdf.abrepdf(path)
                 try:
-                    tratacsv.abrecsv(dados, self.csv_path)
+                    msg1 = tratacsv.abrecsv(dados, self.csv_path)
                 except TypeError:
-                    tratacsv.abrecsv(dados)
+                    msg1 = tratacsv.abrecsv(dados)
                 msg = f"OK: {os.path.basename(path)} feito."
             except Exception as e:
                 msg = f"ERRO: {os.path.basename(path)} -> {e!s}"
 
             percent = int(i * 100 / total)
+            self.progress.emit(percent, msg1)
             self.progress.emit(percent, msg)
 
         self.finished.emit()

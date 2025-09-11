@@ -11,7 +11,7 @@ def abrecsv(dados, caminho):
     nova_linha = {"O.S.": dados["Id"]
                   ,"MATRICULA": dados["matricula"]
                   ,"LOTE E QD": dados["complemento"]
-                  ,"ENDEREÇO": (dados["endereco"]+" Nº "+dados["numero"])
+                  ,"ENDEREÇO": (dados["logradouro"] + " " + dados["endereco"]+" Nº "+dados["numero"])
                   ,"CONSTRUTOR": dados["nome"]
                   ,"STATUS": (dados["grupo"]+dados["atividade"]+" ABERTURA: "+dados["data"])
                   ,"VALOR LAUDO" : 0} 
@@ -23,6 +23,12 @@ def abrecsv(dados, caminho):
         return
     
     ws = wb.active
+    values = list(nova_linha.values())
+
+    # Verificar duplicação de linha
+    for row_idx, row in enumerate(ws.iter_rows(min_row=2, max_row=ws.max_row, values_only=True), start=2):
+        if list(row[:len(values)]) == values:
+            return f"Linha duplicada na posição {row_idx}. Inserção abortada."
 
     empty_row_idx = None
     for i, row in enumerate(ws.iter_rows(min_row=2), start=2):
@@ -30,7 +36,6 @@ def abrecsv(dados, caminho):
             empty_row_idx = i
             break
     
-    values = list(nova_linha.values())
     if empty_row_idx:
         ws.insert_rows(empty_row_idx)
         for col_idx, value in enumerate(values, start=1):
@@ -44,3 +49,5 @@ def abrecsv(dados, caminho):
             cell.font = Font(name="Arial", bold=True)
 
     wb.save(caminho)
+
+    return f"Linha inserida na posição {empty_row_idx or ws.max_row}."
